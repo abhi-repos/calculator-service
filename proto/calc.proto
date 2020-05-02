@@ -2,8 +2,10 @@ syntax = "proto3";
 
 package calculator;
 
-option go_package = "calculator/proto";
+option go_package = "calculator-service/proto";
 
+//- - - - - - -
+//message defined for sum and product
 message Input {
   int64 first_number = 1;
   int64 second_number = 2;
@@ -16,8 +18,24 @@ message Request{
 message Response{
   int64 result = 1;
 }
-
-service CalculatorService{
-  rpc Sum(Request) returns (Response){}
-  rpc Multiply(Request) returns(Response){}
+//- - - - - - -
+//message defined for server streaming for getting prime factors in stream
+message  InputDecomposition{
+  int64 number = 1;
 }
+
+message RequestDecomposition{
+  InputDecomposition input = 1;
+}
+
+message ResponseDecomposition{
+  int64 prime_factor = 1;
+}
+//- - - - - - -
+service CalculatorService{
+  rpc Sum(Request) returns (Response){};
+  rpc Multiply(Request) returns(Response){};
+  rpc PrimeDecomposition(RequestDecomposition) returns (stream ResponseDecomposition){};
+}
+
+
