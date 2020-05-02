@@ -20,7 +20,7 @@ message Response{
 }
 //- - - - - - -
 //message defined for server streaming for getting prime factors in stream
-message  InputDecomposition{
+message InputDecomposition{
   int64 number = 1;
 }
 
@@ -32,10 +32,19 @@ message ResponseDecomposition{
   int64 prime_factor = 1;
 }
 //- - - - - - -
+//message defined for client streaming for getting average
+message Number{
+  int64 num = 1;
+}
+message Average{
+  double num = 1;
+}
+//- - - - - - -
 service CalculatorService{
   rpc Sum(Request) returns (Response){};
   rpc Multiply(Request) returns(Response){};
   rpc PrimeDecomposition(RequestDecomposition) returns (stream ResponseDecomposition){};
+  rpc AverageSvc(stream Number) returns (Average){}
 }
 
 

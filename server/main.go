@@ -6,6 +6,7 @@ import (
 	"github.com/prometheus/common/log"
 	"gitlab.com/calculator-service/proto"
 	"google.golang.org/grpc"
+	"io"
 	"net"
 )
 
@@ -49,6 +50,26 @@ func (*server) PrimeDecomposition(req *proto.RequestDecomposition, stream proto.
 		}
 
 	}
+	return nil
+}
+
+func (*server) AverageSvc(stream proto.CalculatorService_AverageSvcServer) error {
+	sum := 0.0
+	count := 0.0
+	for {
+		msg, err := stream.Recv()
+		if err == io.EOF {
+			return stream.SendAndClose(&proto.Average{
+				Num: sum / count,
+			})
+		}
+		if err != nil {
+			log.Errorf("error in receiving msg %v", err)
+		}
+		sum += float64(msg.Num)
+		count += 1
+	}
+	stream.Recv()
 	return nil
 }
 
