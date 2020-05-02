@@ -34,6 +34,11 @@ func main() {
 	}
 	log.Printf("Prime Factor of %v - %v", 120, slc)
 
+	avg, err := GetAverage([]int64{1, 2, 3, 4}, cc)
+	if err != nil {
+		log.Errorf("Error in getting response", err)
+	}
+	log.Printf("Average is - %v", avg)
 }
 
 func GetSum(first, second int64, client proto.CalculatorServiceClient) (int64, error) {
@@ -88,4 +93,21 @@ func GetPrimeStream(num int64, client proto.CalculatorServiceClient) ([]int64, e
 		slc = append(slc, prime)
 	}
 	return slc, nil
+}
+
+func GetAverage(nums []int64, client proto.CalculatorServiceClient) (float64, error) {
+	stream, err := client.AverageSvc(context.Background())
+	if err != nil {
+		log.Errorf("error in getting stream %v", err)
+	}
+	for _, num := range nums {
+		stream.Send(&proto.Number{
+			Num: num,
+		})
+	}
+	rst, err := stream.CloseAndRecv()
+	if err != nil {
+		log.Errorf("error in getting response %v", err)
+	}
+	return rst.Num, nil
 }
